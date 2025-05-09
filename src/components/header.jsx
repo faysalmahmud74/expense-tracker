@@ -34,6 +34,7 @@ const Header = () => {
     };
 
     const toggleMenu = () => {
+        return;
         setIsMenu(prev => !prev); // Toggle the menu
     };
 

@@ -46,7 +46,7 @@ const Footer = () => {
                     <p className='hidden lg:block xl:block 2xl:block'></p>
                     <p className='hidden lg:block xl:block 2xl:block'></p>
                     <div className='text-center md:text-start lg:text-start xl:text-center 2xl:text-center'>
-                        <p>&copy; {new Date().getFullYear()} Expense Tracker. All rights reserved.</p>
+                        <p>&copy; {new Date().getFullYear()} Expense Tracker 365. All rights reserved.</p>
                         <p>UI Version: 1.0.3 | Developed by Faysal Mahmud</p>
                     </div>
 

@@ -38,7 +38,7 @@ const translations = {
     recentTransactions: "সাম্প্রতিক লেনদেন",
     credit: "ক্রেডিট",
     debit: "ডেবিট",
-    clearAll: "সমস্ত লেনদেন মুছে ফেলুন",
+    clearAll: "সমস্ত লেনদেন মুছুন",
   },
 };
 

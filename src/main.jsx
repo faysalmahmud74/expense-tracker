@@ -9,6 +9,7 @@ import Reports from './pages/Report';
 import Income from './pages/Income';
 import Expense from './pages/Expense';
 import { LanguageProvider } from './LanguageProvider';
+import NotFound from './components/not-found';
 
 
 const root = createRoot(document.getElementById('root'));
@@ -32,6 +33,7 @@ root.render(
           <Route path="/credit" element={<Income />} />
           <Route path="/debit" element={<Expense />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="*" element={<NotFound />} />
 
         </Routes>
 
