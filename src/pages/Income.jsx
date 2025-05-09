@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { FaPlusCircle } from "react-icons/fa";
-import Layout from "../components/Layout";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../LanguageProvider";
+import Layout from "../components/Layout";
 
 const TRANSACTIONS_KEY = "transactions";
 

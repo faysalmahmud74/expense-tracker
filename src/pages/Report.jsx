@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import Layout from "../components/Layout";
 import { useLanguage } from "../LanguageProvider";
+import Layout from "../components/Layout";
 
 const TRANSACTIONS_KEY = "transactions";
 
