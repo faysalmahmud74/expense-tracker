@@ -6,9 +6,9 @@ import {
   FaArrowDown,
   FaEdit,
 } from "react-icons/fa";
-import Layout from "./components/Layout";
 import { useEffect, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
+import Layout from "./components/Layout";
 
 const TRANSACTIONS_KEY = "transactions";
 

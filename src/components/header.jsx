@@ -60,7 +60,7 @@ const Header = () => {
                             src="/pngkey.com-domino-png-2349823.png"
                             alt="Logo"
                             className="h-auto w-24 cursor-pointer"
-                            onClick={() => router('/dashboard')}
+                            onClick={() => router('/')}
                         />
                     </div>
                     <div className="hidden lg:flex lg:flex-grow">
