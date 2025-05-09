@@ -1,12 +1,118 @@
-# React + Vite
+# 💸 Expense Tracker — Desktop App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![GitHub Repo stars](https://img.shields.io/github/stars/faysalmahmud74/expense-tracker?style=flat-square)
+![GitHub last commit](https://img.shields.io/github/last-commit/faysalmahmud74/expense-tracker?color=blue&style=flat-square)
+![License](https://img.shields.io/github/license/faysalmahmud74/expense-tracker?style=flat-square)
 
-Currently, two official plugins are available:
+> A simple yet powerful offline Expense Tracker built with **React** & **Electron**, using **secure local storage** to keep your personal finances private and available — always.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🖼️ Preview
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 🏠 Dashboard View
+![Dashboard Screenshot](https://your-image-url.com/dashboard.png)
+
+### 📊 Monthly Report
+![Report Screenshot](https://your-image-url.com/report.png)
+
+---
+
+## 🚀 Features
+
+✅ Add daily **credit/debit** transactions  
+✅ Secure, persistent **local storage** using `electron-store`  
+✅ Automatic **monthly report** with totals  
+✅ Works **offline** – fully local  
+✅ Cross-platform: Windows, macOS, and Linux  
+✅ Clean, responsive UI built with React  
+✅ Export/Import data (coming soon)  
+✅ Dark mode (planned)
+
+---
+
+## 📦 Tech Stack
+
+- ⚛️ React
+- 🖥️ Electron
+- 📁 Electron Store (for persistent storage)
+- 🎨 Tailwind CSS (optional UI)
+- 🔨 Electron Builder (for packaging)
+
+---
+
+## 🛠️ Installation
+
+Clone the repo:
+
+```bash
+git clone https://github.com/your-username/expense-tracker.git
+cd expense-tracker
+````
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the app in development mode:
+
+```bash
+npm run electron
+```
+
+---
+
+## 📦 Build Installer
+
+Generate desktop app (Windows, macOS, Linux):
+
+```bash
+npm run build
+npm run dist
+```
+
+Install the `.exe` or `.dmg` from the `dist/` folder!
+
+> **Note:** You must install `electron-builder` globally if it's not bundled.
+
+---
+
+## 🧩 Folder Structure
+
+```
+expense-tracker/
+├── public/
+│   └── electron.js        # Electron main process
+├── src/
+│   ├── App.js
+│   ├── components/
+│   │   └── Tracker.js
+│   ├── store/
+│   │   └── storage.js     # Electron Store logic
+├── package.json
+└── README.md
+```
+
+---
+
+## 📚 License
+
+This project is licensed under the MIT License.
+Feel free to fork, star, or contribute!
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! Please open an issue first to discuss what you’d like to change.
+
+---
+
+## ❤️ Author
+
+**Faysal Mahmud**
+[GitHub](https://github.com/faysalmahmud74) • [LinkedIn](https://linkedin.com/in/faysalmahmud74)
+
+---
