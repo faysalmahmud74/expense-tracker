@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
-import Layout from "./components/Layout";
+import Layout from "./components/layout.jsx";
 import InitLoader from "./components/initLoader";
 import { Bar, Pie, Line } from "react-chartjs-2";
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, PointElement, LineElement } from "chart.js";
