@@ -1,6 +1,5 @@
-import React from 'react';
-import Layout from './Layout';
 import Loader from './loader';
+import Layout from './layout';
 
 const NotFound = () => {
     return (
