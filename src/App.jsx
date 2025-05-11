@@ -9,6 +9,12 @@ import {
 import { useEffect, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
 import Layout from "./components/Layout";
+import InitLoader from "./components/initLoader";
+import { Bar, Pie, Line } from "react-chartjs-2";
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, PointElement, LineElement } from "chart.js";
+
+// Register chart components
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, PointElement, LineElement);
 
 const TRANSACTIONS_KEY = "transactions";
 
@@ -17,12 +23,96 @@ const getTransactions = () => {
   return data ? JSON.parse(data) : [];
 };
 
+const getMonthlyData = (transactions) => {
+  const monthlyData = Array(12).fill({ credit: 0, debit: 0 });
+
+  transactions.forEach((tx) => {
+    const month = new Date(tx.date).getMonth();
+    if (tx.type === "Credit") {
+      monthlyData[month] = {
+        ...monthlyData[month],
+        credit: monthlyData[month].credit + tx.amount,
+      };
+    } else if (tx.type === "Debit") {
+      monthlyData[month] = {
+        ...monthlyData[month],
+        debit: monthlyData[month].debit + tx.amount,
+      };
+    }
+  });
+
+  return monthlyData;
+};
+
+const getCurrentMonthData = (transactions) => {
+  const currentMonth = new Date().getMonth();
+  const currentMonthData = { credit: 0, debit: 0 };
+
+  transactions.forEach((tx) => {
+    const month = new Date(tx.date).getMonth();
+    if (month === currentMonth) {
+      if (tx.type === "Credit") {
+        currentMonthData.credit += tx.amount;
+      } else if (tx.type === "Debit") {
+        currentMonthData.debit += tx.amount;
+      }
+    }
+  });
+
+  return currentMonthData;
+};
+
+const getDailyDataForCurrentMonth = (transactions) => {
+  const currentMonth = new Date().getMonth();
+  const daysInMonth = new Date(new Date().getFullYear(), currentMonth + 1, 0).getDate();
+  const dailyData = Array(daysInMonth).fill({ credit: 0, debit: 0 });
+
+  transactions.forEach((tx) => {
+    const date = new Date(tx.date);
+    if (date.getMonth() === currentMonth) {
+      const day = date.getDate() - 1; // Convert to zero-based index
+      if (tx.type === "Credit") {
+        dailyData[day] = {
+          ...dailyData[day],
+          credit: dailyData[day].credit + tx.amount,
+        };
+      } else if (tx.type === "Debit") {
+        dailyData[day] = {
+          ...dailyData[day],
+          debit: dailyData[day].debit + tx.amount,
+        };
+      }
+    }
+  });
+
+  return dailyData;
+};
+
+const getCumulativeBalanceData = (transactions) => {
+  const currentMonth = new Date().getMonth();
+  const daysInMonth = new Date(new Date().getFullYear(), currentMonth + 1, 0).getDate();
+  const cumulativeData = Array(daysInMonth).fill(0);
+
+  transactions.forEach((tx) => {
+    const date = new Date(tx.date);
+    if (date.getMonth() === currentMonth) {
+      const day = date.getDate() - 1; // Convert to zero-based index
+      const amount = tx.type === "Credit" ? tx.amount : -tx.amount;
+      for (let i = day; i < daysInMonth; i++) {
+        cumulativeData[i] += amount;
+      }
+    }
+  });
+
+  return cumulativeData;
+};
+
 const translations = {
   en: {
     totalCredit: "Total Credit",
     totalDebit: "Total Debit",
     balance: "Balance",
-    monthlyActivity: "Monthly Activity (Chart Coming Soon)",
+    monthlyActivity: "Monthly Activity",
     chartPlaceholder: "Chart will be displayed here",
     recentTransactions: "Recent Transactions",
     credit: "Credit",
@@ -33,7 +123,7 @@ const translations = {
     totalCredit: "মোট ক্রেডিট",
     totalDebit: "মোট ডেবিট",
     balance: "ব্যালেন্স",
-    monthlyActivity: "মাসিক কার্যক্রম (চার্ট শীঘ্রই আসছে)",
+    monthlyActivity: "মাসিক কার্যক্রম",
     chartPlaceholder: "এখানে চার্ট দেখানো হবে",
     recentTransactions: "সাম্প্রতিক লেনদেন",
     credit: "ক্রেডিট",
@@ -50,6 +140,21 @@ const HomePage = () => {
   const t = translations[language];
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [editForm, setEditForm] = useState({ type: "", amount: 0, date: "" });
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const hasVisited = localStorage.getItem("hasVisited");
+
+    if (!hasVisited) {
+      setIsLoading(true);
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        localStorage.setItem("hasVisited", "true");
+      }, 2000); // Show loader for 2 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     const transactions = getTransactions();
@@ -102,6 +207,102 @@ const HomePage = () => {
   };
 
   const balance = credit - debit;
+
+  const dailyData = getDailyDataForCurrentMonth(recentTransactions);
+
+  const chartData = {
+    labels: dailyData.map((_, index) => index + 1), // Days of the month
+    datasets: [
+      {
+        label: t.credit,
+        data: dailyData.map((data) => data.credit),
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+      },
+      {
+        label: t.debit,
+        data: dailyData.map((data) => data.debit),
+        backgroundColor: "rgba(255, 99, 132, 0.6)",
+      },
+    ],
+  };
+
+  const chartOptions = {
+    // responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Day of the Month",
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Amount",
+        },
+      },
+    },
+  };
+
+  const totalCredit = dailyData.reduce((sum, day) => sum + day.credit, 0);
+  const totalDebit = dailyData.reduce((sum, day) => sum + day.debit, 0);
+
+  const pieChartData = {
+    labels: [t.credit, t.debit],
+    datasets: [
+      {
+        data: [totalCredit, totalDebit],
+        backgroundColor: ["rgba(75, 192, 192, 0.6)", "rgba(255, 99, 132, 0.6)"],
+      },
+    ],
+  };
+
+  const cumulativeBalanceData = getCumulativeBalanceData(recentTransactions);
+
+  const lineChartData = {
+    labels: dailyData.map((_, index) => index + 1), // Days of the month
+    datasets: [
+      {
+        label: t.balance,
+        data: cumulativeBalanceData,
+        borderColor: "rgba(54, 162, 235, 0.8)",
+        backgroundColor: "rgba(54, 162, 235, 0.2)",
+        fill: true,
+      },
+    ],
+  };
+
+  const lineChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Day of the Month",
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Cumulative Balance",
+        },
+      },
+    },
+  };
+
+  if (isLoading) {
+    return <InitLoader />;
+  }
 
   return (
     <Layout>
@@ -166,8 +367,13 @@ const HomePage = () => {
         {/* Placeholder for Chart */}
         <div className="bg-white rounded-2xl p-6 shadow mb-10">
           <h2 className="text-lg font-semibold mb-4">{t.monthlyActivity}</h2>
-          <div className="h-48 flex items-center justify-center text-gray-400 border-2 border-dashed border-gray-300 rounded-lg">
-            {t.chartPlaceholder}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="w-full col-span-1">
+              <Bar data={chartData} options={chartOptions} />
+            </div>
+            <div className="w-full col-span-1">
+              <Line data={lineChartData} options={lineChartOptions} />
+            </div>
           </div>
         </div>
 
