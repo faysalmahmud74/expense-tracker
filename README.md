@@ -1,4 +1,4 @@
-# 💸 Expense Tracker — Desktop App
+# Expense Tracker — Desktop App
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/faysalmahmud74/expense-tracker?style=flat-square)
 ![GitHub last commit](https://img.shields.io/github/last-commit/faysalmahmud74/expense-tracker?color=blue&style=flat-square)
@@ -8,13 +8,9 @@
 
 ---
 
-## 🖼️ Preview
+## Preview
 
-### 🏠 Dashboard View
-![Dashboard Screenshot](https://your-image-url.com/dashboard.png)
-
-### 📊 Monthly Report
-![Report Screenshot](https://your-image-url.com/report.png)
+![Image](https://github.com/user-attachments/assets/b9c1d132-e573-45c9-9bcd-d99e099b9f15)
 
 ---
 
