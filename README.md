@@ -126,6 +126,6 @@ Contributions are welcome! If you have suggestions or feature requests, feel fre
 
 **Author**: Faysal Mahmud
 
-**Email**: \[[mahmudfaysal64@example.com](mailto:mahmudfaysal64@example.com)]
+**Email**: \[[mahmudfaysal64@gmail.com](mailto:mahmudfaysal64@gmail.com)]
 
 **LinkedIn**: [https://linkedin.com/in/faysalmahmud74](https://linkedin.com/in/faysalmahmud74)
