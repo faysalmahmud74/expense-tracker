@@ -1,114 +1,133 @@
-# Expense Tracker — Desktop App
+# Expense Tracker 365
 
-![GitHub Repo stars](https://img.shields.io/github/stars/faysalmahmud74/expense-tracker?style=flat-square)
-![GitHub last commit](https://img.shields.io/github/last-commit/faysalmahmud74/expense-tracker?color=blue&style=flat-square)
-![License](https://img.shields.io/github/license/faysalmahmud74/expense-tracker?style=flat-square)
+**Expense Tracker 365** is a mobile-first expense tracking application built with React and Capacitor, packaged as an Android APK. It enables users to efficiently manage daily income and expenses through a clean and intuitive interface. Designed for performance and usability, it operates smoothly as a native Android app while leveraging modern web technologies.
 
-> A simple yet powerful offline Expense Tracker built with **React** & **Electron**, using **secure local storage** to keep your personal finances private and available — always.
+## Features
 
----
+- Add, edit, and delete income and expense transactions
+- Visualize income vs. expenses using an interactive pie chart
+- Filter and sort transactions by:
+  - Date (ascending/descending)
+  - Debit amount (ascending/descending)
+  - Credit amount (ascending/descending)
+  - Reset filters to default view
+- Responsive layout optimized for mobile and tablet devices
+- Offline functionality with secure, persistent local storage
+- Built with React and styled using Tailwind CSS
+- Packaged as an Android APK using Capacitor
 
-## Preview
+## Tech Stack
 
-![Image](https://github.com/user-attachments/assets/b9c1d132-e573-45c9-9bcd-d99e099b9f15)
+- **Frontend**: React (with Hooks)
+- **Mobile Platform**: Capacitor
+- **Styling**: Tailwind CSS
+- **Build Tool**: Vite
+- **Charting Library**: Recharts
 
----
+## Getting Started (Web Version)
 
-## 🚀 Features
+### Prerequisites
 
-✅ Add daily **credit/debit** transactions  
-✅ Secure, persistent **local storage** using `electron-store`  
-✅ Automatic **monthly report** with totals  
-✅ Works **offline** – fully local  
-✅ Cross-platform: Windows, macOS, and Linux  
-✅ Clean, responsive UI built with React  
-✅ Export/Import data (coming soon)  
-✅ Dark mode (planned)
+- Node.js (v16 or higher)
+- npm or yarn
 
----
-
-## 📦 Tech Stack
-
-- ⚛️ React
-- 🖥️ Electron
-- 📁 Electron Store (for persistent storage)
-- 🎨 Tailwind CSS (optional UI)
-- 🔨 Electron Builder (for packaging)
-
----
-
-## 🛠️ Installation
-
-Clone the repo:
+### Installation
 
 ```bash
-git clone https://github.com/your-username/expense-tracker.git
+git clone https://github.com/faysalmahmud74/expense-tracker.git
 cd expense-tracker
+npm install
+npm run dev
 ````
 
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run the app in development mode:
-
-```bash
-npm run electron
-```
-
----
-
-## 📦 Build Installer
-
-Generate desktop app (Windows, macOS, Linux):
+### Build for Web Production
 
 ```bash
 npm run build
-npm run dist
 ```
 
-Install the `.exe` or `.dmg` from the `dist/` folder!
+## Building Android APK with Capacitor
 
-> **Note:** You must install `electron-builder` globally if it's not bundled.
+Ensure you have Android Studio installed and properly configured.
 
----
+### 1. Initialize Capacitor
 
-## 🧩 Folder Structure
+```bash
+npx cap init
+```
+
+### 2. Add Android Platform
+
+```bash
+npx cap add android
+```
+
+### 3. Copy Web Build to Native
+
+```bash
+npm run build
+npx cap copy
+```
+
+### 4. Open Android Project
+
+```bash
+npx cap open android
+```
+
+Then, build and run the APK using Android Studio.
+
+## Folder Structure
 
 ```
 expense-tracker/
-├── public/
-│   └── electron.js        # Electron main process
-├── src/
-│   ├── App.js
-│   ├── components/
-│   │   └── Tracker.js
-│   ├── store/
-│   │   └── storage.js     # Electron Store logic
-├── package.json
-└── README.md
+├── android/               # Android native project
+├── public/                # Static assets
+├── src/                   # React source code
+│   ├── assets/            # Images and icons
+│   ├── components/        # Reusable UI components
+│   ├── pages/             # Application pages
+│   ├── data/              # Static or mock data
+│   ├── utils/             # Utility functions
+│   └── App.jsx            # Main application component
+├── capacitor.config.json  # Capacitor configuration
+├── package.json           # Project metadata and scripts
+└── README.md              # Project documentation
 ```
 
----
+## License
 
-## 📚 License
+MIT License
+© 2025 Faysal Mahmud
 
-This project is licensed under the MIT License.
-Feel free to fork, star, or contribute!
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
----
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 
-## 🤝 Contributing
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 
-Pull requests are welcome! Please open an issue first to discuss what you’d like to change.
+## Contribution
 
----
+Contributions are welcome! If you have suggestions or feature requests, feel free to open an issue or submit a pull request.
 
-## ❤️ Author
+## Contact
 
-**Faysal Mahmud**
-[GitHub](https://github.com/faysalmahmud74) • [LinkedIn](https://linkedin.com/in/faysalmahmud74)
+**Author**: Faysal Mahmud
 
----
+**Email**: \[[mahmudfaysal64@example.com](mailto:mahmudfaysal64@example.com)]
+
+**LinkedIn**: [https://linkedin.com/in/faysalmahmud74](https://linkedin.com/in/faysalmahmud74)
+
+```
