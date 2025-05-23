@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaSignOutAlt, FaUserCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { DEFAULT_USER_IMAGE_URL } from './constants';
@@ -29,12 +28,7 @@ const Header = () => {
         router('/');
     };
 
-    const _toProfile = () => {
-        router('/profile');
-    };
-
     const toggleMenu = () => {
-        return;
         setIsMenu(prev => !prev); // Toggle the menu
     };
 
@@ -55,10 +49,11 @@ const Header = () => {
         <div className="relative">
             <header className="fixed top-0 w-full bg-white flex items-center justify-between px-4 py-3 border-b border-gray-200 z-50">
                 {/* Logo in the middle */}
-                <div className="flex-grow flex justify-center lg:justify-start">
+                <div className='w-full'> </div>
+                <div className="w-full flex-grow flex justify-center lg:justify-start">
                     <div className='lg:w-[255px] xl:w-[255px] 2xl:w-[255px]'>
                         <img
-                            src="/pngkey.com-domino-png-2349823.png"
+                            src="/logo.png"
                             alt="Logo"
                             className="h-auto w-24 cursor-pointer"
                             onClick={() => router('/')}
@@ -69,36 +64,44 @@ const Header = () => {
                     </div>
                 </div>
 
-                {/* Profile Avatar */}
-                <img
-                    src={DEFAULT_USER_IMAGE_URL}
-                    alt="Avatar"
-                    className="h-11 w-11 border rounded-full cursor-pointer"
-                    onClick={toggleMenu}
-                />
-
-                {/* Dropdown Menu */}
-                {isMenu && (
-                    <div
-                        ref={menuRef}
-                        className="absolute right-4 top-14 w-48 bg-white shadow-md rounded-md z-50"
+                {/* Language Switch */}
+                <div className="w-full flex justify-end">
+                    <div className="relative">
+                    <button
+                        className="h-10 w-10 border rounded-full flex items-center justify-center cursor-pointer"
+                        onClick={toggleMenu}
                     >
+                        {language.toUpperCase()}
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {isMenu && (
                         <div
-                            className="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-gray-100"
-                            onClick={_toProfile}
+                            ref={menuRef}
+                            className="absolute right-4 top-14 w-48 bg-white shadow-md rounded-md z-50"
                         >
-                            <FaUserCircle className="mr-2" />
-                            {t.profile}
+                            <div
+                                className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100"
+                                onClick={() => {
+                                    setLanguage('en');
+                                    setIsMenu(false);
+                                }}
+                            >
+                                English
+                            </div>
+                            <div
+                                className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100"
+                                onClick={() => {
+                                    setLanguage('bn');
+                                    setIsMenu(false);
+                                }}
+                            >
+                                বাংলা
+                            </div>
                         </div>
-                        <div
-                            className="flex items-center px-4 py-2 text-sm cursor-pointer hover:bg-gray-100"
-                            onClick={handleLogout}
-                        >
-                            <FaSignOutAlt className="mr-2" />
-                            {t.logout}
-                        </div>
-                    </div>
-                )}
+                    )}
+                </div>
+                </div>
             </header>
         </div>
     );

@@ -9,6 +9,9 @@ import {
     FaShippingFast,
     FaMoneyBillWave,
     FaWallet,
+    FaInfo,
+    FaInfoCircle,
+    FaChartPie,
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "../LanguageProvider";
@@ -16,15 +19,19 @@ import { useLanguage } from "../LanguageProvider";
 const translations = {
     en: {
         dashboard: "Dashboard",
-        credit: "Credit",
-        debit: "Debit",
+        credit: "Income",
+        debit: "Expense",
         reports: "Reports",
+        about: "About",
+        charts: "Charts",
     },
     bn: {
         dashboard: "ড্যাশবোর্ড",
-        credit: "ক্রেডিট",
-        debit: "ডেবিট",
+        credit: "আয়",
+        debit: "ব্যয়",
         reports: "রিপোর্ট",
+        about: "সম্পর্কে",
+        charts: "চার্ট",
     },
 };
 
@@ -103,6 +110,32 @@ const Sidebar = () => {
                             >
                                 <FaChartBar className="mr-3" />
                                 {t.reports}
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to="/charts"
+                                className={({ isActive }) =>
+                                    isActive
+                                        ? "flex items-center hover:text-teal-600 bg-blue-500 text-white py-2 rounded-lg px-2"
+                                        : "text-gray-600 flex items-center hover:text-teal-600 px-2"
+                                }
+                            >
+                                <FaChartPie className="mr-3" />
+                                {t.charts}
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to="/about"
+                                className={({ isActive }) =>
+                                    isActive
+                                        ? "flex items-center hover:text-teal-600 bg-blue-500 text-white py-2 rounded-lg px-2"
+                                        : "text-gray-600 flex items-center hover:text-teal-600 px-2"
+                                }
+                            >
+                                <FaInfoCircle className="mr-3" />
+                                {t.about}
                             </NavLink>
                         </li>
                     </ul>

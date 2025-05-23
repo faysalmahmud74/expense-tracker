@@ -10,6 +10,8 @@ import Income from './pages/Income';
 import Expense from './pages/Expense';
 import { LanguageProvider } from './LanguageProvider';
 import NotFound from './components/not-found';
+import About from './pages/About';
+import Charts from './pages/Chart';
 
 
 const root = createRoot(document.getElementById('root'));
@@ -33,6 +35,8 @@ root.render(
           <Route path="/credit" element={<Income />} />
           <Route path="/debit" element={<Expense />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/charts" element={<Charts />} />
+          <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
 
         </Routes>

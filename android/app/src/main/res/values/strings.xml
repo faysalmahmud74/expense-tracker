@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Expense Tracker 365</string>
+    <string name="title_activity_main">Expense Tracker 365</string>
+    <string name="package_name">com.faysal.expensetracker</string>
+    <string name="custom_url_scheme">com.faysal.expensetracker</string>
+</resources>

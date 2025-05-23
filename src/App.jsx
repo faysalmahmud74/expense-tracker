@@ -1,17 +1,18 @@
 import {
   FaMoneyBillWave,
   FaWallet,
-  FaBalanceScale,
   FaArrowUp,
   FaArrowDown,
   FaEdit,
 } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
-import Layout from "./components/layout.jsx";
 import InitLoader from "./components/initLoader";
 import { Bar, Pie, Line } from "react-chartjs-2";
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, PointElement, LineElement } from "chart.js";
+import { useNavigate } from "react-router-dom";
+import { MdAccountBalance, MdDelete, MdOutlineAccountBalance } from "react-icons/md";
+import Layout from "./components/Layout";
 
 // Register chart components
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, PointElement, LineElement);
@@ -23,45 +24,6 @@ const getTransactions = () => {
   return data ? JSON.parse(data) : [];
 };
 
-const getMonthlyData = (transactions) => {
-  const monthlyData = Array(12).fill({ credit: 0, debit: 0 });
-
-  transactions.forEach((tx) => {
-    const month = new Date(tx.date).getMonth();
-    if (tx.type === "Credit") {
-      monthlyData[month] = {
-        ...monthlyData[month],
-        credit: monthlyData[month].credit + tx.amount,
-      };
-    } else if (tx.type === "Debit") {
-      monthlyData[month] = {
-        ...monthlyData[month],
-        debit: monthlyData[month].debit + tx.amount,
-      };
-    }
-  });
-
-  return monthlyData;
-};
-
-const getCurrentMonthData = (transactions) => {
-  const currentMonth = new Date().getMonth();
-  const currentMonthData = { credit: 0, debit: 0 };
-
-  transactions.forEach((tx) => {
-    const month = new Date(tx.date).getMonth();
-    if (month === currentMonth) {
-      if (tx.type === "Credit") {
-        currentMonthData.credit += tx.amount;
-      } else if (tx.type === "Debit") {
-        currentMonthData.debit += tx.amount;
-      }
-    }
-  });
-
-  return currentMonthData;
-};
-
 const getDailyDataForCurrentMonth = (transactions) => {
   const currentMonth = new Date().getMonth();
   const daysInMonth = new Date(new Date().getFullYear(), currentMonth + 1, 0).getDate();
@@ -71,12 +33,12 @@ const getDailyDataForCurrentMonth = (transactions) => {
     const date = new Date(tx.date);
     if (date.getMonth() === currentMonth) {
       const day = date.getDate() - 1; // Convert to zero-based index
-      if (tx.type === "Credit") {
+      if (tx.type === "Income") {
         dailyData[day] = {
           ...dailyData[day],
           credit: dailyData[day].credit + tx.amount,
         };
-      } else if (tx.type === "Debit") {
+      } else if (tx.type === "Expense") {
         dailyData[day] = {
           ...dailyData[day],
           debit: dailyData[day].debit + tx.amount,
@@ -97,7 +59,7 @@ const getCumulativeBalanceData = (transactions) => {
     const date = new Date(tx.date);
     if (date.getMonth() === currentMonth) {
       const day = date.getDate() - 1; // Convert to zero-based index
-      const amount = tx.type === "Credit" ? tx.amount : -tx.amount;
+      const amount = tx.type === "Income" ? tx.amount : -tx.amount;
       for (let i = day; i < daysInMonth; i++) {
         cumulativeData[i] += amount;
       }
@@ -109,37 +71,58 @@ const getCumulativeBalanceData = (transactions) => {
 
 const translations = {
   en: {
-    totalCredit: "Total Credit",
-    totalDebit: "Total Debit",
+    totalCredit: "Total Income",
+    totalDebit: "Total Expense",
     balance: "Balance",
     monthlyActivity: "Monthly Activity",
     chartPlaceholder: "Chart will be displayed here",
     recentTransactions: "Recent Transactions",
-    credit: "Credit",
-    debit: "Debit",
-    clearAll: "Clear All Transactions",
+    credit: "Income",
+    debit: "Expense",
+    clearAll: "Delete All",
+    noTransaction: "No transactions available.",
+    type: "Type",
+    amount: "Amount",
+    date: "Date",
+    save: "Save",
+    cancel: "Cancel",
+    currency: "$",
+    description: "Description",
+    editTransaction: "Edit Transaction",
+    showAll: "Show All",
   },
   bn: {
-    totalCredit: "মোট ক্রেডিট",
-    totalDebit: "মোট ডেবিট",
+    totalCredit: "মোট আয়",
+    totalDebit: "মোট ব্যয়",
     balance: "ব্যালেন্স",
     monthlyActivity: "মাসিক কার্যক্রম",
     chartPlaceholder: "এখানে চার্ট দেখানো হবে",
     recentTransactions: "সাম্প্রতিক লেনদেন",
-    credit: "ক্রেডিট",
-    debit: "ডেবিট",
-    clearAll: "সমস্ত লেনদেন মুছুন",
+    credit: "আয়",
+    debit: "ব্যয়",
+    clearAll: "সব মুছুন",
+    noTransaction: "কোনো লেনদেন নেই",
+    type: "ধরন",
+    amount: "পরিমাণ",
+    date: "তারিখ",
+    save: "সংরক্ষণ করুন",
+    cancel: "বাতিল করুন",
+    currency: "৳",
+    description: "বিবরণ",
+    editTransaction: "এডিট ট্রানজেকশন",
+    showAll: "সব দেখুন",
   },
 };
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const [credit, setCredit] = useState(0);
   const [debit, setDebit] = useState(0);
   const [recentTransactions, setRecentTransactions] = useState([]);
   const { language, setLanguage } = useLanguage();
   const t = translations[language];
   const [editingTransaction, setEditingTransaction] = useState(null);
-  const [editForm, setEditForm] = useState({ type: "", amount: 0, date: "" });
+  const [editForm, setEditForm] = useState({ type: "", category: "", amount: 0, date: "" });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -150,7 +133,7 @@ const HomePage = () => {
       const timer = setTimeout(() => {
         setIsLoading(false);
         localStorage.setItem("hasVisited", "true");
-      }, 2000); // Show loader for 2 seconds
+      }, 4000); // Show loader for 4 seconds
 
       return () => clearTimeout(timer);
     }
@@ -162,9 +145,9 @@ const HomePage = () => {
     let totalDebit = 0;
 
     transactions.forEach((tx) => {
-      if (tx.type === "Credit") {
+      if (tx.type === "Income") {
         totalCredit += tx.amount;
-      } else if (tx.type === "Debit") {
+      } else if (tx.type === "Expense") {
         totalDebit += tx.amount;
       }
     });
@@ -195,16 +178,42 @@ const HomePage = () => {
 
   const handleEditSave = () => {
     const updatedTransactions = recentTransactions.map((tx) =>
-      tx.id === editingTransaction.id ? { ...tx, ...editForm } : tx
+      tx.id === editingTransaction.id
+        ? { ...tx, ...editForm, amount: parseFloat(editForm.amount) }
+        : tx
     );
-    setRecentTransactions(updatedTransactions);
     localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(updatedTransactions));
+    // Refetch transactions from localStorage to ensure latest data
+    const refreshedTransactions = getTransactions();
+    setRecentTransactions(refreshedTransactions);
+
+    // Recalculate credit and debit
+    let totalCredit = 0;
+    let totalDebit = 0;
+    refreshedTransactions.forEach((tx) => {
+      if (tx.type === "Income") {
+        totalCredit += tx.amount;
+      } else if (tx.type === "Expense") {
+        totalDebit += tx.amount;
+      }
+    });
+    setCredit(totalCredit);
+    setDebit(totalDebit);
+
     setEditingTransaction(null);
   };
 
   const handleEditCancel = () => {
     setEditingTransaction(null);
   };
+
+  const deleteTransaction = (id) => {
+    if (confirm("Are you sure you want to delete this transaction?")) {
+      const updatedTransactions = recentTransactions.filter((tx) => tx.id !== id);
+      setRecentTransactions(updatedTransactions);
+      localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(updatedTransactions));
+    }
+  }
 
   const balance = credit - debit;
 
@@ -307,65 +316,44 @@ const HomePage = () => {
   return (
     <Layout>
       <div className="p-6 bg-gray-100 min-h-screen">
-        {/* Language Switcher and Clear Button */}
-        <div className="mb-4 flex justify-between items-center">
-          <div className="flex">
-            <button
-              className={`px-3 py-1 rounded-l ${language === "en"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200"
-                }`}
-              onClick={() => setLanguage("en")}
-            >
-              English
-            </button>
-            <button
-              className={`px-3 py-1 rounded-r ${language === "bn"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200"
-                }`}
-              onClick={() => setLanguage("bn")}
-            >
-              বাংলা
-            </button>
-          </div>
-          <button
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            onClick={handleClearTransactions}
-          >
-            {t.clearAll}
-          </button>
-        </div>
-
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          <div className="bg-white rounded-2xl p-5 shadow hover:shadow-lg transition">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+          <div
+            className="bg-white rounded-2xl p-5 shadow hover:shadow-lg transition cursor-pointer"
+            onClick={() => navigate("/credit")}
+          >
             <div className="flex items-center text-green-600 mb-3">
               <FaMoneyBillWave className="text-2xl mr-2" />
               <h2 className="text-xl font-medium">{t.totalCredit}</h2>
             </div>
-            <p className="text-2xl font-bold text-gray-800">${credit}</p>
+            <p className="text-2xl font-bold text-gray-800">{t.currency}{credit}</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow hover:shadow-lg transition">
+          <div
+            className="bg-white rounded-2xl p-5 shadow hover:shadow-lg transition cursor-pointer"
+            onClick={() => navigate("/debit")}
+          >
             <div className="flex items-center text-red-600 mb-3">
               <FaWallet className="text-2xl mr-2" />
               <h2 className="text-xl font-medium">{t.totalDebit}</h2>
             </div>
-            <p className="text-2xl font-bold text-gray-800">${debit}</p>
+            <p className="text-2xl font-bold text-gray-800">{t.currency}{debit}</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow hover:shadow-lg transition">
+          <div
+            className="bg-white rounded-2xl p-5 shadow hover:shadow-lg transition cursor-pointer"
+            onClick={() => navigate("/reports")}
+          >
             <div className="flex items-center text-blue-600 mb-3">
-              <FaBalanceScale className="text-2xl mr-2" />
+              <MdAccountBalance className="text-2xl mr-2" />
               <h2 className="text-xl font-medium">{t.balance}</h2>
             </div>
-            <p className="text-2xl font-bold text-gray-800">${balance}</p>
+            <p className="text-2xl font-bold text-gray-800">{t.currency}{balance}</p>
           </div>
         </div>
 
         {/* Placeholder for Chart */}
-        <div className="bg-white rounded-2xl p-6 shadow mb-10">
+        <div className="bg-white rounded-2xl p-6 shadow mb-4">
           <h2 className="text-lg font-semibold mb-4">{t.monthlyActivity}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="w-full col-span-1">
@@ -379,90 +367,146 @@ const HomePage = () => {
 
         {/* Recent Transactions */}
         <div className="bg-white rounded-2xl p-6 shadow">
-          <h2 className="text-lg font-semibold mb-4">{t.recentTransactions}</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">{t.recentTransactions}</h2>
+            <button
+              className="px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition"
+              onClick={handleClearTransactions}
+            >
+              {t.clearAll}
+            </button>
+          </div>
           {recentTransactions.length === 0 ? (
-            <p className="text-gray-500">No transactions available.</p>
+            <p className="text-gray-500">{t.noTransaction}</p>
           ) : (
-            <ul className="divide-y divide-gray-200">
-              {recentTransactions.slice().sort((a, b) => b.id - a.id).map((tx) => (
-                <li
-                  key={tx.id}
-                  className="py-4 flex items-center justify-between"
+            <>
+              <ul className="divide-y divide-gray-200">
+                {recentTransactions
+                  .slice()
+                  .sort((a, b) => b.id - a.id)
+                  .slice(0, 5)
+                  .map((tx) => (
+                    <li
+                      key={tx.id}
+                      className="py-4 flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-4">
+                        {tx.type === "Income" ? (
+                          <FaArrowUp className="text-green-500" />
+                        ) : (
+                          <FaArrowDown className="text-red-500" />
+                        )}
+                        {/* <span className="font-medium">
+                          {tx.type === "Income" ? t.credit : t.debit}
+                        </span> */}
+                      </div>
+                      <div className="w-2/6 text-gray-700 text-start">{tx.category}</div>
+                      <div className="w-2/6 text-gray-700">{t.currency}{tx.amount}</div>
+                      <div className="flex gap-4">
+                        <button
+                          className="text-blue-500 hover:underline"
+                          onClick={() => handleEditClick(tx)}
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          className="text-red-500 hover:underline"
+                          onClick={() => { deleteTransaction(tx.id) }}
+                        >
+                          <MdDelete />
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+              <div className="flex justify-center mt-4">
+                <button
+                  className="text-blue-600 font-medium"
+                  onClick={() => navigate("/reports")}
                 >
-                  <div className="flex items-center gap-4">
-                    {tx.type === "Credit" ? (
-                      <FaArrowUp className="text-green-500" />
-                    ) : (
-                      <FaArrowDown className="text-red-500" />
-                    )}
-                    <span className="font-medium">
-                      {tx.type === "Credit" ? t.credit : t.debit}
-                    </span>
-                  </div>
-                  <div className="text-gray-700">${tx.amount}</div>
-                  <div className="text-gray-500 text-sm">{tx.date}</div>
-                  <button
-                    className="text-blue-500 hover:underline"
-                    onClick={() => handleEditClick(tx)}
-                  >
-                    <FaEdit />
-                  </button>
-                </li>
-              ))}
-            </ul>
+                  {t.showAll}
+                </button>
+              </div>
+            </>
           )}
 
           {editingTransaction && (
-            <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-              <div className="bg-white p-6 rounded shadow-lg">
-                <h3 className="text-lg font-semibold mb-4">Edit Transaction</h3>
-                <form>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1">Type</label>
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 flex items-center justify-center px-4">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+                <h3 className="text-xl font-semibold text-gray-800 mb-6 text-center">
+                  {t.editTransaction}
+                </h3>
+                <form className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                      {t.type}
+                    </label>
                     <select
                       name="type"
                       value={editForm.type}
                       onChange={handleEditChange}
-                      className="w-full border rounded px-3 py-2"
+                      className="w-full px-4 py-2 rounded-xl border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      <option value="Credit">Credit</option>
-                      <option value="Debit">Debit</option>
+                      <option value="Income">{t.credit}</option>
+                      <option value="Expense">{t.debit}</option>
                     </select>
                   </div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1">Amount</label>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                      {t.description}
+                    </label>
+                    <input
+                      type="text"
+                      name="category"
+                      value={editForm.category}
+                      onChange={handleEditChange}
+                      placeholder="e.g., Salary, Grocery"
+                      className="w-full px-4 py-2 rounded-xl border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                      {t.amount}
+                    </label>
                     <input
                       type="number"
                       name="amount"
                       value={editForm.amount}
                       onChange={handleEditChange}
-                      className="w-full border rounded px-3 py-2"
+                      placeholder="৳0.00"
+                      className="w-full px-4 py-2 rounded-xl border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1">Date</label>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                      {t.date}
+                    </label>
                     <input
                       type="date"
                       name="date"
                       value={editForm.date}
                       onChange={handleEditChange}
-                      className="w-full border rounded px-3 py-2"
+                      className="w-full px-4 py-2 rounded-xl border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-                  <div className="flex justify-end gap-4">
+
+                  <div className="flex justify-end gap-3 pt-4">
                     <button
                       type="button"
-                      className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                      className="px-4 py-2 rounded-xl border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
                       onClick={handleEditCancel}
                     >
-                      Cancel
+                      {t.cancel}
                     </button>
                     <button
                       type="button"
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                      className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
                       onClick={handleEditSave}
                     >
-                      Save
+                      {t.save}
                     </button>
                   </div>
                 </form>
