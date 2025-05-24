@@ -10,7 +10,7 @@ import { useLanguage } from "./LanguageProvider";
 import InitLoader from "./components/initLoader";
 import { Bar, Pie, Line } from "react-chartjs-2";
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, PointElement, LineElement } from "chart.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { MdAccountBalance, MdDelete, MdOutlineAccountBalance } from "react-icons/md";
 import Layout from "./components/Layout";
 
@@ -116,6 +116,7 @@ const translations = {
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [credit, setCredit] = useState(0);
   const [debit, setDebit] = useState(0);
   const [recentTransactions, setRecentTransactions] = useState([]);

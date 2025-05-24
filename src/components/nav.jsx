@@ -47,10 +47,11 @@ const Sidebar = () => {
         <>
             {/* Toggler Button for Mobile */}
             <button
-                className="lg:hidden fixed top-4 left-4 z-50 bg-blue-500 text-white p-2 rounded focus:outline-none"
+                className="h-9 w-9 lg:hidden fixed top-4 left-4 z-50 border p-2 rounded-xl flex items-center justify-center transition-all duration-200"
                 onClick={toggleSidebar}
+                aria-label="Open menu"
             >
-                <FaBars size={20} />
+                <FaBars size={18} className="text-gray-700" />
             </button>
 
             {/* Sidebar */}

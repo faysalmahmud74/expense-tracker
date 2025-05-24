@@ -12,6 +12,7 @@ import { LanguageProvider } from './LanguageProvider';
 import NotFound from './components/not-found';
 import About from './pages/About';
 import Charts from './pages/Chart';
+import BackButtonHandler from './useAndroidBackHandler';
 
 
 const root = createRoot(document.getElementById('root'));
@@ -20,6 +21,8 @@ root.render(
   <StrictMode>
     <LanguageProvider>
       <Router>
+
+        <BackButtonHandler />
 
         <ToastContainer  //react-toastify config defalut
           position="top-right"

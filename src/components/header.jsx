@@ -67,40 +67,40 @@ const Header = () => {
                 {/* Language Switch */}
                 <div className="w-full flex justify-end">
                     <div className="relative">
-                    <button
-                        className="h-10 w-10 border rounded-full flex items-center justify-center cursor-pointer"
-                        onClick={toggleMenu}
-                    >
-                        {language.toUpperCase()}
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    {isMenu && (
-                        <div
-                            ref={menuRef}
-                            className="absolute right-4 top-14 w-48 bg-white shadow-md rounded-md z-50"
+                        <button
+                            className="h-9 w-9 border rounded-xl flex items-center justify-center cursor-pointer"
+                            onClick={toggleMenu}
                         >
+                            {language.toUpperCase()}
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {isMenu && (
                             <div
-                                className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100"
-                                onClick={() => {
-                                    setLanguage('en');
-                                    setIsMenu(false);
-                                }}
+                                ref={menuRef}
+                                className="absolute right-4 top-14 w-48 bg-white shadow-md rounded-md z-50"
                             >
-                                English
+                                <div
+                                    className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100"
+                                    onClick={() => {
+                                        setLanguage('en');
+                                        setIsMenu(false);
+                                    }}
+                                >
+                                    English
+                                </div>
+                                <div
+                                    className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100"
+                                    onClick={() => {
+                                        setLanguage('bn');
+                                        setIsMenu(false);
+                                    }}
+                                >
+                                    বাংলা
+                                </div>
                             </div>
-                            <div
-                                className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100"
-                                onClick={() => {
-                                    setLanguage('bn');
-                                    setIsMenu(false);
-                                }}
-                            >
-                                বাংলা
-                            </div>
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
                 </div>
             </header>
         </div>
