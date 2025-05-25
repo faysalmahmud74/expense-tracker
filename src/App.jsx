@@ -11,8 +11,9 @@ import InitLoader from "./components/initLoader";
 import { Bar, Pie, Line } from "react-chartjs-2";
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, PointElement, LineElement } from "chart.js";
 import { useNavigate, useLocation } from "react-router-dom";
-import { MdAccountBalance, MdDelete, MdOutlineAccountBalance } from "react-icons/md";
+import { MdAccountBalance, MdDelete, MdKeyboardArrowRight, MdOutlineAccountBalance } from "react-icons/md";
 import Layout from "./components/Layout";
+import { IoIosArrowDropright } from "react-icons/io";
 
 // Register chart components
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, PointElement, LineElement);
@@ -320,36 +321,46 @@ const HomePage = () => {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           <div
-            className="bg-white rounded-2xl p-5 shadow hover:shadow-lg transition cursor-pointer"
+            className="flex justify-between items-center bg-white rounded-2xl p-5 shadow hover:shadow-lg transition cursor-pointer"
             onClick={() => navigate("/credit")}
           >
-            <div className="flex items-center text-green-600 mb-3">
-              <FaMoneyBillWave className="text-2xl mr-2" />
-              <h2 className="text-xl font-medium">{t.totalCredit}</h2>
+            <div className="w-full">
+              <div className="flex items-center text-green-600 mb-3">
+                <FaMoneyBillWave className="text-2xl mr-2" />
+                <h2 className="text-xl font-medium">{t.totalCredit}</h2>
+              </div>
+              <p className="text-2xl font-bold text-gray-800">{t.currency}{credit}</p>
             </div>
-            <p className="text-2xl font-bold text-gray-800">{t.currency}{credit}</p>
+            <MdKeyboardArrowRight size={30} className="text-gray-300" />
           </div>
 
           <div
-            className="bg-white rounded-2xl p-5 shadow hover:shadow-lg transition cursor-pointer"
+            className="flex justify-between items-center bg-white rounded-2xl p-5 shadow hover:shadow-lg transition cursor-pointer"
             onClick={() => navigate("/debit")}
           >
-            <div className="flex items-center text-red-600 mb-3">
-              <FaWallet className="text-2xl mr-2" />
-              <h2 className="text-xl font-medium">{t.totalDebit}</h2>
+            <div className="w-full">
+              <div className="flex items-center text-red-600 mb-3">
+                <FaWallet className="text-2xl mr-2" />
+                <h2 className="text-xl font-medium">{t.totalDebit}</h2>
+              </div>
+              <p className="text-2xl font-bold text-gray-800">{t.currency}{debit}</p>
             </div>
-            <p className="text-2xl font-bold text-gray-800">{t.currency}{debit}</p>
+
+            <MdKeyboardArrowRight size={30} className="text-gray-300" />
           </div>
 
           <div
-            className="bg-white rounded-2xl p-5 shadow hover:shadow-lg transition cursor-pointer"
+            className="flex justify-between items-center bg-white rounded-2xl p-5 shadow hover:shadow-lg transition cursor-pointer"
             onClick={() => navigate("/reports")}
           >
-            <div className="flex items-center text-blue-600 mb-3">
-              <MdAccountBalance className="text-2xl mr-2" />
-              <h2 className="text-xl font-medium">{t.balance}</h2>
+            <div className="w-full">
+              <div className="flex items-center text-blue-600 mb-3">
+                <MdAccountBalance className="text-2xl mr-2" />
+                <h2 className="text-xl font-medium">{t.balance}</h2>
+              </div>
+              <p className="text-2xl font-bold text-gray-800">{t.currency}{balance}</p>
             </div>
-            <p className="text-2xl font-bold text-gray-800">{t.currency}{balance}</p>
+            <MdKeyboardArrowRight size={30} className="text-gray-300" />
           </div>
         </div>
 
