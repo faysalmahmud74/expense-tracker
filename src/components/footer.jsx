@@ -124,16 +124,22 @@ const Footer = () => {
                                 </button>
                                 <div className='flex gap-4'>
                                     <button
-                                        className="flex-1 bg-transparent border-none shadow-none text-green-500 font-semibold mx-2"
+                                        className="bg-transparent border-none shadow-none text-green-500 font-semibold mx-2"
                                         style={{ background: "none", border: "none", boxShadow: "none" }}
                                         onClick={handleCalcClose}
                                     >
                                         {t.close}
                                     </button>
                                     <button
-                                        className="flex-1 bg-transparent border-none shadow-none text-green-500 font-semibold ml-2"
+                                        className="bg-transparent border-none shadow-none text-green-500 font-semibold ml-2"
                                         style={{ background: "none", border: "none", boxShadow: "none" }}
-                                        onClick={handleCalcClose}
+                                        onClick={() => {
+                                            if (calcResult === "" && calcInput !== "") {
+                                                handleCalcEqual();
+                                            } else {
+                                                handleCalcClose();
+                                            }
+                                        }}
                                     >
                                         {t.ok}
                                     </button>

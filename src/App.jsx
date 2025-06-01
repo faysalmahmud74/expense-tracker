@@ -214,6 +214,19 @@ const HomePage = () => {
       const updatedTransactions = recentTransactions.filter((tx) => tx.id !== id);
       setRecentTransactions(updatedTransactions);
       localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(updatedTransactions));
+
+      // Recalculate credit and debit
+      let totalCredit = 0;
+      let totalDebit = 0;
+      updatedTransactions.forEach((tx) => {
+        if (tx.type === "Income") {
+          totalCredit += tx.amount;
+        } else if (tx.type === "Expense") {
+          totalDebit += tx.amount;
+        }
+      });
+      setCredit(totalCredit);
+      setDebit(totalDebit);
     }
   }
 

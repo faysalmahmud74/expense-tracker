@@ -25,6 +25,7 @@ const translations = {
         add: "Add Expense",
         noIncome: "No expense entries yet.",
         currency: "$",
+        expenses: "Expenses",
 
     },
     bn: {
@@ -35,7 +36,15 @@ const translations = {
         add: "ব্যয় যোগ করুন",
         noIncome: "এখনো কোনো ব্যয়ের তথ্য নেই",
         currency: "৳",
+        expenses: "ব্যয়সমূহ",
     },
+};
+
+// Helper to get local date string in YYYY-MM-DD
+const getLocalDateString = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().split("T")[0];
 };
 
 const Expense = () => {
@@ -43,7 +52,7 @@ const Expense = () => {
     const { language } = useLanguage();
     const t = translations[language] || translations.en;
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = getLocalDateString();
     const [form, setForm] = useState({ category: "", amount: "", date: today });
     const [entries, setEntries] = useState([]);
 
@@ -117,7 +126,7 @@ const Expense = () => {
 
                 {/* Expense List Section */}
                 <div className="bg-white rounded-2xl p-6 shadow">
-                    <h2 className="text-lg font-semibold text-gray-800 mb-4">{t.addExpense}</h2>
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">{t.expenses}</h2>
 
                     {entries.length === 0 ? (
                         <p className="text-gray-500 text-sm">{t.noIncome}</p>
