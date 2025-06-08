@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLanguage } from "../LanguageProvider";
 import Layout from "../components/Layout";
 import React from "react";
+import { BiSolidEdit } from "react-icons/bi";
 
 const TRANSACTIONS_KEY = "transactions";
 
@@ -29,6 +30,17 @@ const translations = {
     currency: "$",
     delete: "Delete",
     editTransaction: "Edit Transaction",
+    options: {
+      today: "Today",
+      thismonth: "This Month",
+      last7: "Last 7 Days",
+      last15: "Last 15 Days",
+      lastMonth: "Last Month",
+      specific: "Specific Date",
+      daterange: "Date Range", // <-- add translation for date range
+      from: "From",
+      to: "To",
+    },
   },
   bn: {
     reports: "রিপোর্ট",
@@ -48,12 +60,26 @@ const translations = {
     currency: "৳",
     delete: "মুছুন",
     editTransaction: "এডিট ট্রানজেকশন",
+    options: {
+      today: "আজ",
+      thismonth: "এই মাস",
+      last7: "গত ৭ দিন",
+      last15: "গত ১৫ দিন",
+      lastMonth: "গত মাস",
+      specific: "নির্দিষ্ট তারিখ",
+      daterange: "তারিখ পরিসর", // <-- add translation for date range
+      from: "হতে",
+      to: "থেকে",
+    },
   },
 };
 
 const Reports = () => {
   const [entries, setEntries] = useState([]);
   const [filterDate, setFilterDate] = useState("");
+  const [filterDateRange, setFilterDateRange] = useState("");
+  const [filterFromDate, setFilterFromDate] = useState(""); // for range
+  const [filterToDate, setFilterToDate] = useState("");     // for range
   const [filterType, setFilterType] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
@@ -75,8 +101,84 @@ const Reports = () => {
 
   const allCategories = Array.from(new Set(entries.map(e => e.category))).filter(Boolean);
 
+  // Helper to get date N days ago
+  const getPastDate = (days) => {
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  // Helper to get today's date (start of day)
+  const getToday = () => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  // Helper to get first day of last month
+  const getLastMonthRange = () => {
+    const now = new Date();
+    const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+    firstDayLastMonth.setHours(0, 0, 0, 0);
+    lastDayLastMonth.setHours(23, 59, 59, 999);
+    return [firstDayLastMonth, lastDayLastMonth];
+  };
+
+  // Helper to get first and last day of this month
+  const getThisMonthRange = () => {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    firstDay.setHours(0, 0, 0, 0);
+    lastDay.setHours(23, 59, 59, 999);
+    return [firstDay, lastDay];
+  };
+
+  // Date filter logic
   const filteredEntries = entries
-    .filter((e) => (filterDate ? e.date === filterDate : true))
+    .filter((e) => {
+      if (filterDateRange === "today") {
+        const today = getToday();
+        const entryDate = new Date(e.date);
+        entryDate.setHours(0, 0, 0, 0);
+        return entryDate.getTime() === today.getTime();
+      }
+      if (filterDateRange === "thismonth") {
+        const [start, end] = getThisMonthRange();
+        const d = new Date(e.date);
+        return d >= start && d <= end;
+      }
+      if (filterDateRange === "7") {
+        const past = getPastDate(7);
+        return new Date(e.date) >= past;
+      }
+      if (filterDateRange === "15") {
+        const past = getPastDate(15);
+        return new Date(e.date) >= past;
+      }
+      if (filterDateRange === "month") {
+        const [start, end] = getLastMonthRange();
+        const d = new Date(e.date);
+        return d >= start && d <= end;
+      }
+      if (filterDateRange === "date" && filterDate) {
+        return e.date === filterDate;
+      }
+      if (filterDateRange === "daterange" && filterFromDate && filterToDate) {
+        const entryDate = new Date(e.date);
+        const from = new Date(filterFromDate);
+        const to = new Date(filterToDate);
+        from.setHours(0, 0, 0, 0);
+        to.setHours(23, 59, 59, 999);
+        return entryDate >= from && entryDate <= to;
+      }
+      if (!filterDateRange && filterDate) {
+        return e.date === filterDate;
+      }
+      return !filterDateRange || filterDateRange === "";
+    })
     .filter((e) => (filterType ? e.type === filterType : true))
     .filter((e) => (filterCategory ? e.category === filterCategory : true));
 
@@ -136,15 +238,34 @@ const Reports = () => {
             <label className="text-sm font-medium text-gray-700">
               {t.filterByDate}
             </label>
-            <div className="flex gap-2">
-              <input
-                type="date"
-                value={filterDate}
-                onChange={(e) => setFilterDate(e.target.value)}
+            <div className="flex gap-2 items-center">
+              <select
+                value={filterDateRange}
+                onChange={(e) => {
+                  setFilterDateRange(e.target.value);
+                  setFilterDate("");
+                  setFilterFromDate("");
+                  setFilterToDate("");
+                }}
                 className="px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              >
+                <option value="">{t.default}</option>
+                <option value="today">{t.options.today}</option>
+                <option value="thismonth">{t.options.thismonth}</option>
+                <option value="7">{t.options.last7}</option>
+                <option value="15">{t.options.last15}</option>
+                <option value="month">{t.options.lastMonth}</option>
+                <option value="date">{t.options.specific}</option>
+                <option value="daterange">{t.options.daterange}</option>
+              </select>
+
               <button
-                onClick={() => setFilterDate("")}
+                onClick={() => {
+                  setFilterDate("");
+                  setFilterDateRange("");
+                  setFilterFromDate("");
+                  setFilterToDate("");
+                }}
                 className="px-3 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm hover:bg-gray-200 transition"
               >
                 {t.clear}
@@ -168,6 +289,33 @@ const Reports = () => {
             </select>
           </div>
         </div>
+        {filterDateRange === "date" && (
+          <input
+            type="date"
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+            className="px-0.5 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        )}
+        {filterDateRange === "daterange" && (
+          <div className="flex gap-2 items-center">
+            <input
+              type="date"
+              value={filterFromDate}
+              onChange={(e) => setFilterFromDate(e.target.value)}
+              className="px-0.5 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="From"
+            />
+            <span className="text-gray-500">{t.options.to}</span>
+            <input
+              type="date"
+              value={filterToDate}
+              onChange={(e) => setFilterToDate(e.target.value)}
+              className="px-0.5 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="To"
+            />
+          </div>
+        )}
 
 
         {/* Filter by Category */}
@@ -206,7 +354,6 @@ const Reports = () => {
                 <div className="space-y-2">
                   <div className="text-xs text-gray-500 flex items-center gap-1">
                     📅 {new Date(item.date).toLocaleDateString("en-GB")}
-
                   </div>
                   <div className="flex items-center gap-2">
                     <span
@@ -220,13 +367,27 @@ const Reports = () => {
                     <span className="text-sm font-medium">{item.category}</span>
                   </div>
                 </div>
-                <div
-                  className={`text-sm font-bold px-3 py-1 rounded ${item.type === "Income"
-                    ? "text-green-600"
-                    : "text-red-600"
-                    }`}
-                >
-                  {item.type === "Income" ? "+" : "-"}{t.currency}{item.amount}
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`text-sm font-bold px-3 py-1 rounded ${item.type === "Income"
+                      ? "text-green-600"
+                      : "text-red-600"
+                      }`}
+                  >
+                    {item.type === "Income" ? "+" : "-"}{t.currency}{item.amount}
+                  </div>
+                  {/* Edit icon */}
+                  <button
+                    type="button"
+                    className="ml-2 p-1 rounded hover:bg-gray-100"
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleItemClick(item);
+                    }}
+                    title={t.editTransaction}
+                  >
+                    <BiSolidEdit size={20} className="text-gray-300" />
+                  </button>
                 </div>
               </div>
             ))
